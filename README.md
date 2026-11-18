@@ -1,56 +1,38 @@
-# Welcome to your Expo app 👋
+# Equilibrio Estudiantil
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Problema
+Personas beneficiarias: Estudiantes y compañeros que necesitan concentrarse mejor o desean rendir mejor y evitar el cansancio extremo al estudiar.
+Evidencia inicial: Observación y experiencia de cómo el exceso de tiempo continuo sin descansos reduce la concentración y aumenta el estrés antes de los exámenes o entregas de proyectos.
 
-## Get started
+## Solución
+Descripción de la solución: Crearé una aplicación móvil orientada a la técnica Pomodoro adaptada al ritmo escolar, que permita gestionar bloques de estudio y descansos con alertas visuales y un registro diario de productividad.
+Funcionalidades principales: 1. Temporizador Pomodoro Activo — Iniciar, pausar y reiniciar la cuenta regresiva de estudio (por ejemplo, 25 min) y de descanso (5 min) con cambios visuales claros en pantalla.
+2. Selector de Modos de Estudio — Elegir entre un modo rápido de repaso (25/5 min) o un modo profundo de estudio (45/15 min) según la necesidad del momento.
+3. Registro Diario de Ciclos — Visualizar un contador simple con el total de bloques de estudio completados durante la jornada escolar para medir el progreso del día.
+Recorrido de uso: El usuario abre la aplicación y visualiza la pantalla principal con el temporizador listo y el modo de estudio seleccionado.Selecciona el modo deseado (por ejemplo, repaso corto o programación) y presiona el botón "Iniciar" para activar la cuenta regresiva.Al finalizar el tiempo de concentración, la app avisa el cambio de ciclo y suma automáticamente un bloque completado al registro diario del estudiante.
+Pantallas previstas: Pantalla Principal: Mostrar la cuenta regresiva activa, los botones de control (iniciar, pausar, reiniciar) y el selector de modos.
+Pantalla de Estadísticas / Resumen: Ver el contador diario de bloques completados y un pequeño historial de la jornada.
+Pantalla de Configuración / Tips: Ajustar preferencias básicas de la app y visualizar tips rápidos de descanso y bienestar visual.
+Diferenciación: No busca ser una app genérica de productividad con funciones complejas o pagos; está pensada específicamente para las necesidades de los estudiantes técnicos, combinando un diseño minimalista, control de tiempos de descanso visual y la optimización para evitar el cansancio frente a las largas sesiones de estudio. ________________________________________________________________________________
+Comprobaciones: Cuando el usuario presione el botón de "Iniciar", el temporizador debe comenzar la cuenta regresiva de forma fluida y cambiar el color/diseño del estado visual a "En Concentración".
+Resumen: Quiero resolver la fatiga mental y la mala gestión del tiempo de los estudiantes mediante una app móvil de temporizador Pomodoro en React Native. La primera versión permitirá elegir entre dos modos de estudio (repaso o estudio), controlar la cuenta regresiva de concentración y descanso, y llevar un registro diario de bloques completados para mejorar la productividad escolar.
 
-1. Install dependencies
+## Objetivos
+- Permitir elegir entre dos modos de estudio (25/5 min y 45/15 min) con cuenta regresiva continua entre pantallas
+- Garantizar que al presionar Iniciar la cuenta regresiva (25:00 o 45:00) comience en menos de 500ms con precisión de 1 segundo y continúe sin detenerse ni crashear al cambiar de pantalla o pasar brevemente a segundo plano.
+- Verificar que al llegar el temporizador a 00:00 se active automáticamente el estado de descanso con alerta visual/vibración y el contador diario sume +1 en menos de 1 segundo sin duplicar registros.
+- Comprobar que el contador diario guardado en AsyncStorage conserve el valor exacto tras cerrar y reabrir la app, reiniciándose automáticamente a 0 al detectar el cambio de fecha del día siguiente.
 
-   ```bash
-   npm install
-   ```
+## Habilidades
+- React Native con Expo y TypeScript
+- Manejo de estado local y custom hooks (useState y useEffect)
+- Navegación entre pantallas con Expo Router
+- Componentes reutilizables y props tipadas
+- Persistencia de datos local con AsyncStorage
 
-2. Start the app
+## Alcance inicial
+Sí incluirá en el MVP: El temporizador funcional con cuenta regresiva, el cambio entre dos modos de estudio (repaso 25/5 min y programación 45/15 min), los botones de control (iniciar, pausar, reiniciar) y el conteo diario persistente de bloques completados.
+No incluirá todavía: Sincronización en la nube, cuentas de usuario, bases de datos externas, notificaciones push complejas ni pasarelas de pago.
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
-
-### Other setup steps
-
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Restricciones
+- Riesgo y plan: Revisar la documentación oficial de hooks (useEffect, setInterval) y realizar pruebas pequeñas en un componente aislado antes de integrarlo al diseño final.

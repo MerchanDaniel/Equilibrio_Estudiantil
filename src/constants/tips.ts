@@ -4,14 +4,22 @@ import { WellnessTip } from '../types/pomodoro';
 export const WELLNESS_TIPS: WellnessTip[] = [
   {
     title: 'Regla 20-20-20 para la vista',
-    desc: 'Cada 20 minutos frente al código, mira un objeto a 6 metros durante 20 segundos.',
+    desc: 'Mira un objeto a 6 metros durante 20 segundos para relajar el enfoque ocular.',
+    minBreakMinutes: 5,
   },
   {
-    title: 'Estiramiento en pausas cortas',
-    desc: 'Aprovecha los 5 minutos de descanso para levantarte y estirar cuello y espalda.',
+    title: 'Estiramiento de cuello y hombros',
+    desc: 'Ponte de pie, gira suavemente los hombros atrás y estira el cuello 30 segundos.',
+    minBreakMinutes: 5,
   },
   {
-    title: 'Hidratación constante',
-    desc: 'Ten agua cerca; la deshidratación leve reduce la concentración y aumenta la fatiga.',
+    title: 'Hidratación consciente',
+    desc: 'Toma un vaso de agua completo antes de volver a concentrarte.',
+    minBreakMinutes: 5,
+  },
+  {
+    title: 'Caminata corta y aire fresco',
+    desc: 'Camina 5-8 minutos lejos del escritorio o asómate a tomar aire para resetear la mente.',
+    minBreakMinutes: 15,
   },
 ];

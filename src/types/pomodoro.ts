@@ -1,5 +1,6 @@
 export type StudyMode = 'repaso' | 'proyecto';
 export type TimerPhase = 'focus' | 'break';
+export type EnergyLevel = 'alta' | 'media' | 'agotado';
 
 export interface ModeConfig {
   label: string;
@@ -10,4 +11,5 @@ export interface ModeConfig {
 export interface WellnessTip {
   title: string;
   desc: string;
+  minBreakMinutes: number;
 }

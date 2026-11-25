@@ -1,12 +1,10 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import { useEffect, useRef, useState } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { MODES } from '../constants/modes';
-import { StudyMode, TimerPhase } from '../types/pomodoro';
-
-const STATS_KEY = '@equilibrio_estudiantil_stats';
-const getToday = () => new Date().toISOString().split('T')[0];
+import { WELLNESS_TIPS } from '../constants/tips';
+import { loadDailyStats, saveDailyStats } from '../services/storageService';
+import { EnergyLevel, StudyMode, TimerPhase, WellnessTip } from '../types/pomodoro';
 
 export const usePomodoro = () => {
   const [mode, setMode] = useState<StudyMode>('repaso');
@@ -15,38 +13,29 @@ export const usePomodoro = () => {
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [completedCycles, setCompletedCycles] = useState<number>(0);
   const [streak, setStreak] = useState<number>(1);
+  const [energy, setEnergy] = useState<EnergyLevel>('media');
+  const [distractionFree, setDistractionFree] = useState<boolean>(false);
+  const [activeChallenge, setActiveChallenge] = useState<WellnessTip>(WELLNESS_TIPS[0]);
 
   const endTimeRef = useRef<number | null>(null);
   const appState = useRef<AppStateStatus>(AppState.currentState);
 
-  const persistStats = async (count: number, currentStreak: number) => {
-    try {
-      await AsyncStorage.setItem(STATS_KEY, JSON.stringify({ date: getToday(), count, streak: currentStreak }));
-    } catch {}
-  };
-
   useEffect(() => {
-    (async () => {
-      const today = getToday();
-      try {
-        const raw = await AsyncStorage.getItem(STATS_KEY);
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (parsed.date === today) {
-            setCompletedCycles(parsed.count || 0);
-            setStreak(parsed.streak || 1);
-            return;
-          }
-          const nextStreak = parsed.count > 0 ? (parsed.streak || 0) + 1 : 0;
-          setCompletedCycles(0);
-          setStreak(nextStreak);
-          await persistStats(0, nextStreak);
-          return;
-        }
-      } catch {}
-      await persistStats(0, 1);
-    })();
+    loadDailyStats().then((d) => {
+      setCompletedCycles(d.count);
+      setStreak(d.streak);
+      setEnergy(d.lastEnergy);
+    });
   }, []);
+
+  const pickChallenge = (breakMins: number, currentEnergy: EnergyLevel) => {
+    const pool =
+      currentEnergy === 'agotado' || breakMins >= 15
+        ? WELLNESS_TIPS
+        : WELLNESS_TIPS.filter((t) => t.minBreakMinutes <= breakMins);
+    const list = pool.length ? pool : WELLNESS_TIPS;
+    setActiveChallenge(list[Math.floor(Math.random() * list.length)]);
+  };
 
   const handlePhaseComplete = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -55,11 +44,13 @@ export const usePomodoro = () => {
     if (phase === 'focus') {
       setCompletedCycles((prev) => {
         const next = prev + 1;
-        persistStats(next, streak);
+        saveDailyStats(next, streak, energy);
         return next;
       });
+      const breakMins = MODES[mode].breakMinutes;
+      pickChallenge(breakMins, energy);
       setPhase('break');
-      setSecondsLeft(MODES[mode].breakMinutes * 60);
+      setSecondsLeft(breakMins * 60);
     } else {
       setPhase('focus');
       setSecondsLeft(MODES[mode].focusMinutes * 60);
@@ -71,27 +62,37 @@ export const usePomodoro = () => {
     if (!endTimeRef.current) endTimeRef.current = Date.now() + secondsLeft * 1000;
     const interval = setInterval(() => {
       if (!endTimeRef.current) return;
-      const remaining = Math.max(0, Math.round((endTimeRef.current - Date.now()) / 1000));
-      setSecondsLeft(remaining);
-      if (remaining === 0) {
+      const rem = Math.max(0, Math.round((endTimeRef.current - Date.now()) / 1000));
+      setSecondsLeft(rem);
+      if (rem === 0) {
         clearInterval(interval);
         handlePhaseComplete();
       }
     }, 250);
     return () => clearInterval(interval);
-  }, [isRunning, phase, mode]);
+  }, [isRunning, phase, mode, energy]);
 
   useEffect(() => {
     const sub = AppState.addEventListener('change', (next) => {
       if (appState.current.match(/inactive|background/) && next === 'active' && isRunning && endTimeRef.current) {
-        const remaining = Math.max(0, Math.round((endTimeRef.current - Date.now()) / 1000));
-        setSecondsLeft(remaining);
-        if (remaining === 0) handlePhaseComplete();
+        const rem = Math.max(0, Math.round((endTimeRef.current - Date.now()) / 1000));
+        setSecondsLeft(rem);
+        if (rem === 0) handlePhaseComplete();
       }
       appState.current = next;
     });
     return () => sub.remove();
   }, [isRunning, phase, mode]);
+
+  const setEnergyLevel = (level: EnergyLevel) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setEnergy(level);
+    saveDailyStats(completedCycles, streak, level);
+    if (level === 'agotado' && phase === 'focus') {
+      setMode('repaso');
+      setSecondsLeft(MODES.repaso.focusMinutes * 60);
+    }
+  };
 
   const startTimer = () => {
     if (isRunning) return;
@@ -125,12 +126,16 @@ export const usePomodoro = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setCompletedCycles((prev) => {
       const next = prev + 1;
-      persistStats(next, streak);
+      saveDailyStats(next, streak, energy);
       return next;
     });
   };
 
   const formattedTime = `${String(Math.floor(secondsLeft / 60)).padStart(2, '0')}:${String(secondsLeft % 60).padStart(2, '0')}`;
 
-  return { mode, phase, isRunning, completedCycles, streak, formattedTime, startTimer, pauseTimer, resetTimer, changeMode, simulateCycle };
+  return {
+    mode, phase, isRunning, completedCycles, streak, energy, distractionFree,
+    activeChallenge, formattedTime, startTimer, pauseTimer, resetTimer,
+    changeMode, setEnergyLevel, setDistractionFree, simulateCycle, pickChallenge,
+  };
 };

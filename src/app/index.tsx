@@ -19,33 +19,25 @@ export default function TimerScreen() {
   } = useSharedPomodoro();
 
   return (
-    <View style={styles.container}>
+    <View style={styles.screen}>
       <ModeSelector currentMode={mode} onSelectMode={changeMode} />
-
-      <TimerDisplay
-        formattedTime={formattedTime}
-        phase={phase}
-        isRunning={isRunning}
-      />
-
+      <TimerDisplay formattedTime={formattedTime} phase={phase} isRunning={isRunning} />
       <TimerControls
         isRunning={isRunning}
         onStart={startTimer}
         onPause={pauseTimer}
         onReset={resetTimer}
       />
-
       <DailyCounter completedCycles={completedCycles} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
     backgroundColor: '#020617',
     paddingHorizontal: 24,
-    paddingTop: 24,
     alignItems: 'center',
     justifyContent: 'center',
   },

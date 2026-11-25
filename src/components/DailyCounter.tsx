@@ -4,20 +4,17 @@ interface DailyCounterProps {
   completedCycles: number;
 }
 
-export const DailyCounter = ({ completedCycles }: DailyCounterProps) => {
-  return (
-    <View style={styles.card}>
-      <View>
-        <Text style={styles.subtitle}>Progreso de hoy</Text>
-        <Text style={styles.title}>Bloques completados</Text>
-      </View>
-
-      <View style={styles.badge}>
-        <Text style={styles.countText}>{completedCycles}</Text>
-      </View>
+export const DailyCounter = ({ completedCycles }: DailyCounterProps) => (
+  <View style={styles.card}>
+    <View>
+      <Text style={styles.subtitle}>Progreso de hoy</Text>
+      <Text style={styles.title}>Bloques completados</Text>
     </View>
-  );
-};
+    <View style={styles.badge}>
+      <Text style={styles.count}>{completedCycles}</Text>
+    </View>
+  </View>
+);
 
 const styles = StyleSheet.create({
   card: {
@@ -32,18 +29,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  subtitle: {
-    color: '#94a3b8',
-    fontSize: 11,
-    textTransform: 'uppercase',
-    fontWeight: '600',
-  },
-  title: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '700',
-    marginTop: 2,
-  },
+  subtitle: { color: '#94a3b8', fontSize: 11, textTransform: 'uppercase', fontWeight: '600' },
+  title: { color: '#ffffff', fontSize: 16, fontWeight: '700', marginTop: 2 },
   badge: {
     backgroundColor: 'rgba(79, 70, 229, 0.25)',
     borderWidth: 1,
@@ -52,9 +39,5 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 12,
   },
-  countText: {
-    color: '#a5b4fc',
-    fontWeight: '800',
-    fontSize: 20,
-  },
+  count: { color: '#a5b4fc', fontWeight: '800', fontSize: 20 },
 });
